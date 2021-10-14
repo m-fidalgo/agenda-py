@@ -1,0 +1,94 @@
+<MainScreen>:
+  orientation: 'vertical'
+  padding: 10
+  spacing: 10
+
+  ScrollView:
+
+    BoxLayout:
+      id: agenda
+      orientation: 'vertical'
+      size_hint_y: None
+      height: self.minimum_height
+
+  BoxLayout:
+    size_hint_y: None
+    height: "40dp"
+
+    Label:
+      text:'Nome'
+    TextInput:
+      id: nome
+    Label:
+      text:'Idade'
+    TextInput:
+      id: idade
+    Label:
+      text:'Telefone'
+    TextInput:
+      id: tel
+    
+  BoxLayout:
+    size_hint_y: None
+    height: "40dp"
+
+    Button:
+      text:'Cadastrar'
+      size_hint_x: 15
+      on_release: root.insert()
+    Button:
+      text:'Remover'
+      size_hint_x: 15
+      on_release: root.delete()
+    Button:
+      text:'Alterar'
+      size_hint_x: 15
+      on_release: root.update()
+    Button:
+      text:'Exportar'
+      size_hint_x: 15
+      on_release: root.export_contacts()
+    Button:
+      text:'Importar'
+      size_hint_x: 15
+      on_release: root.import_contacts()
+
+<ContactBtn>:
+  font_size: 30
+  size_hint_y: None
+  height: 50
+
+<DeletePopUp>:
+  size_hint: .8, .5
+  BoxLayout:
+    orientation: 'vertical'
+    Label:
+      text:'Deseja mesmo remover o contato?'
+      font_size: 25
+      halign: 'center'
+      valign: 'middle'
+    BoxLayout:
+      size_hint: 1, .2
+      Button:
+        text: 'Sim'
+        on_release:
+          root.delete_function()
+          root.dismiss()
+      Button:
+        text: 'Não'
+        on_release: root.dismiss()
+
+<MsgPopUp>:
+  size_hint: .8, .5
+  BoxLayout:
+    orientation: 'vertical'
+    Label:
+      text:'Você deve preencher todos os campos'
+      font_size: 25
+      halign: 'center'
+      valign: 'middle'
+    BoxLayout:
+      Button:
+        size_hint: .8, .5
+        text: 'Voltar'
+        on_release: root.dismiss()

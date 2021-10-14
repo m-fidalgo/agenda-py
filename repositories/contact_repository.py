@@ -58,14 +58,14 @@ class ContactRepository():
       db.close()
 
   @staticmethod
-  def find_id(id):
+  def find_by_id(id):
     db = ConnectionFactory.connect()
     try:
       cursor = db.cursor()
-      cursor.execute("SELECT id FROM contatos WHERE id=%s", (id, ))
-      
-      if cursor.fetchone():
-        return True
+      cursor.execute("SELECT * FROM contatos WHERE id=%s", (id, ))
+      res = cursor.fetchone()
+      if len(res) != 0:
+        return Contact(res[1], res[2], res[3], res[0])
       return False
     finally:
       db.close()
