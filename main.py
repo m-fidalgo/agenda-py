@@ -12,6 +12,7 @@ while menu != 0:
   print("4. Remover Contato")
   print("5. Buscar Contato")
   print("6. Exportar Contatos")
+  print("7. Importar Contatos")
   print("0. Sair")
 
   menu = int(input("Opção: "))
@@ -53,6 +54,15 @@ while menu != 0:
         agenda = ContactRepository.get()
         for c in agenda:
           file.write(f"{c.id} - {c.nome} - {c.idade} - {c.tel} \n")
+    except FileNotFoundError:
+      print("Arquivo não encontrado")
+  elif menu == 7:
+    try:
+      with open("agenda.txt", "r") as file:
+        linhas = file.readlines()
+        for linha in linhas:
+          dados = linha.split(" - ")
+          ContactRepository.insert(Contact(dados[1], int(dados[2]), dados[3].split(" \n")[0]))
     except FileNotFoundError:
       print("Arquivo não encontrado")
   elif menu == 0:
