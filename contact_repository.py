@@ -27,8 +27,11 @@ class ContactRepository():
   def update(id, contato):
     db = ConnectionFactory.connect()
     try:
-      cursor = db.cursor()
-      cursor.execute("UPDATE contatos SET nome=%s, idade=%s, tel=%s WHERE id=%s", (contato.nome, contato.idade, contato.tel, id))
+      if ContactRepository.find_id(id):
+        cursor = db.cursor()
+        cursor.execute("UPDATE contatos SET nome=%s, idade=%s, tel=%s WHERE id=%s", (contato.nome, contato.idade, contato.tel, id))
+      else:
+        print("Id não encontrado")
     finally:
       db.close()
 
@@ -36,7 +39,25 @@ class ContactRepository():
   def delete(id):
     db = ConnectionFactory.connect()
     try:
+      if ContactRepository.find_id(id):
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM contatos WHERE id=%s", (id, ))
+      else:
+        print("Id não encontrado")
+    finally:
+      db.close()
+
+  @staticmethod
+  def find_id(id):
+    db = ConnectionFactory.connect()
+    try:
       cursor = db.cursor()
-      cursor.execute("DELETE FROM contatos WHERE id=%s", (id, ))
+      cursor.execute("SELECT id FROM contatos")
+      
+      for i in cursor.fetchall():
+        if int(i[0]) == id:
+          return True
+
+      return False
     finally:
       db.close()
