@@ -15,7 +15,9 @@ while menu != 0:
   menu = int(input("Opção: "))
 
   if menu == 1:
-    ContactRepository.get()
+    agenda = ContactRepository.get()
+    for c in agenda:
+      print(f"{c.id} - {c.nome} - {c.idade} anos - Tel: {c.tel}")
   elif menu == 2:
     nome = input("Nome: ")
     idade = int(input("Idade: "))

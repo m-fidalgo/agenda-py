@@ -1,8 +1,9 @@
 class Contact():
-  def __init__(self, nome=None, idade=None, tel=None):
+  def __init__(self, nome=None, idade=None, tel=None, id=None):
     self.__nome = nome
     self.__idade = idade
     self.__tel = tel
+    self.__id = id
 
   @property
   def nome(self):
@@ -16,6 +17,10 @@ class Contact():
   def tel(self):
     return self.__tel
 
+  @property
+  def id(self):
+    return self.__id
+
   @nome.setter
   def nome(self, nome):
     self.__nome = nome
@@ -27,3 +32,7 @@ class Contact():
   @tel.setter
   def tel(self, tel):
     self.__tel = tel
+  
+  @id.setter
+  def id(self, id):
+    self.__id = id

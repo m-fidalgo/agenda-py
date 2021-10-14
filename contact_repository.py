@@ -5,14 +5,16 @@ class ContactRepository():
   @staticmethod
   def get():
     db = ConnectionFactory.connect()
+    agenda = []
     try:
       cursor = db.cursor()
       cursor.execute("SELECT * FROM contatos")
       
       for i in cursor.fetchall():
-        print(f"{i[0]} - {i[1]} - {i[2]} anos - Telefone: {i[3]}")
+        agenda.append(Contact(i[1], int(i[2]), i[3], int(i[0])))
     finally:
       db.close()
+      return agenda
 
   @staticmethod
   def insert(contato):
@@ -46,10 +48,11 @@ class ContactRepository():
     db = ConnectionFactory.connect()
     try:
       cursor = db.cursor()
-      cursor.execute("SELECT tel FROM contatos WHERE nome=%s", (nome, ))
-
-      if cursor.fetchone():
-        return cursor.fetchone()[0]
+      print(nome)
+      cursor.execute("SELECT tel FROM contatos WHERE nome=%s", (nome,))
+      res = cursor.fetchone()
+      if len(res) != 0:
+        return res[0]
       return False
     finally:
       db.close()
