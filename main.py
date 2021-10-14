@@ -9,6 +9,7 @@ while menu != 0:
   print("2. Inserir Contato")
   print("3. Atualizar Contato")
   print("4. Remover Contato")
+  print("5. Buscar Contato")
   print("0. Sair")
 
   menu = int(input("Opção: "))
@@ -22,12 +23,25 @@ while menu != 0:
     ContactRepository.insert(Contact(nome, idade, tel))
   elif menu == 3:
     id = int(input("Id: "))
-    nome = input("Nome: ")
-    idade = int(input("Idade: "))
-    tel = input("Telefone: ")
-    ContactRepository.update(id, Contact(nome, idade, tel))
+    if ContactRepository.find_id(id):
+      nome = input("Nome: ")
+      idade = int(input("Idade: "))
+      tel = input("Telefone: ")
+      ContactRepository.update(id, Contact(nome, idade, tel))
+    else:
+      print("Id não encontrado")
   elif menu == 4:
     id = int(input("Id: "))
-    ContactRepository.delete(id)
+    if ContactRepository.find_id(id):
+      ContactRepository.delete(id)
+    else:
+      print("Id não encontrado")
+  elif menu == 5:
+    nome = input("Nome: ")
+    tel = ContactRepository.find_by_name(nome)
+    if tel:
+      print(f"Telefone: {tel}")
+    else:
+      print("Contato não encontrado")
   else:
     print("Opção inválida")
