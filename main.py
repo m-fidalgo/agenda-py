@@ -1,6 +1,6 @@
 from typing import final
-from contact import Contact
-from contact_repository import ContactRepository
+from entities.contact import Contact
+from repositories.contact_repository import ContactRepository
 
 menu = 1
 
@@ -49,22 +49,9 @@ while menu != 0:
     else:
       print("Contato não encontrado")
   elif menu == 6:
-    try:
-      with open("agenda.txt","a") as file:
-        agenda = ContactRepository.get()
-        for c in agenda:
-          file.write(f"{c.id} - {c.nome} - {c.idade} - {c.tel} \n")
-    except FileNotFoundError:
-      print("Arquivo não encontrado")
+    ContactRepository.export_contacts()
   elif menu == 7:
-    try:
-      with open("agenda.txt", "r") as file:
-        linhas = file.readlines()
-        for linha in linhas:
-          dados = linha.split(" - ")
-          ContactRepository.insert(Contact(dados[1], int(dados[2]), dados[3].split(" \n")[0]))
-    except FileNotFoundError:
-      print("Arquivo não encontrado")
+    ContactRepository.import_contacts()
   elif menu == 0:
     print("Saindo...")
   else:

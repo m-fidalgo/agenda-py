@@ -1,5 +1,5 @@
-from connection_factory import ConnectionFactory
-from contact import Contact
+from factories.connection_factory import ConnectionFactory
+from entities.contact import Contact
 
 class ContactRepository():
   @staticmethod
@@ -69,3 +69,24 @@ class ContactRepository():
       return False
     finally:
       db.close()
+
+  @staticmethod
+  def export_contacts():
+    try:
+      with open("agenda.txt","w") as file:
+        agenda = ContactRepository.get()
+        for c in agenda:
+          file.write(f"{c.id} - {c.nome} - {c.idade} - {c.tel} \n")
+    except FileNotFoundError:
+      print("Arquivo não encontrado")
+
+  @staticmethod
+  def import_contacts():
+    try:
+      with open("agenda.txt", "r") as file:
+        linhas = file.readlines()
+        for linha in linhas:
+          dados = linha.split(" - ")
+          ContactRepository.insert(Contact(dados[1], int(dados[2]), dados[3].split(" \n")[0]))
+    except FileNotFoundError:
+      print("Arquivo não encontrado")
