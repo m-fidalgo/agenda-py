@@ -1,8 +1,7 @@
 import MySQLdb, configparser
 
 class ConnectionFactory():
-  @staticmethod
-  def connect():
+  def connect(self):
     config = configparser.ConfigParser()
     config.read('config.ini')
     db = MySQLdb.connect(user=config['DB']['user'],

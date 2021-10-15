@@ -35,7 +35,8 @@ class MainScreen(BoxLayout):
   
   def get(self):
     self.ids.agenda.clear_widgets()
-    agenda = ContactRepository.get()
+    contactRep = ContactRepository()
+    agenda = contactRep.get()
 
     for contato in agenda:
       self.ids.agenda.add_widget(ContactBtn(contato))
@@ -45,7 +46,8 @@ class MainScreen(BoxLayout):
       nome = self.ids.nome.text
       idade = int(self.ids.idade.text)
       tel = self.ids.tel.text
-      ContactRepository.insert(Contact(nome, idade, tel))
+      contactRep = ContactRepository()
+      contactRep.insert(Contact(nome, idade, tel))
       self.__clean_fields()
       self.get()
 
@@ -58,7 +60,8 @@ class MainScreen(BoxLayout):
       nome = self.ids.nome.text
       idade = int(self.ids.idade.text)
       tel = self.ids.tel.text
-      ContactRepository.update(id, Contact(nome, idade, tel))
+      contactRep = ContactRepository()
+      contactRep.update(id, Contact(nome, idade, tel))
       self.__clean_fields()
       self.get()
 
@@ -69,16 +72,19 @@ class MainScreen(BoxLayout):
     popup.open()
 
   def delete_contact(self, id):
-    ContactRepository.delete(id)
+    contactRep = ContactRepository()
+    contactRep.delete(id)
     MainScreen.selected_id = 0
     self.__clean_fields()
     self.get()
 
   def export_contacts(self):
-    ContactRepository.export_contacts()
+    contactRep = ContactRepository()
+    contactRep.export_contacts()
 
   def import_contacts(self):
-    ContactRepository.import_contacts()
+    contactRep = ContactRepository()
+    contactRep.import_contacts()
     self.get()
 
   def __clean_fields(self):
