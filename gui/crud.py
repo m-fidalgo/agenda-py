@@ -5,6 +5,7 @@ from kivy.uix.popup import Popup
 from kivy.properties import partial
 
 from repositories.contact_repository import ContactRepository
+from factories.connection_factory import ConnectionFactory
 from entities.contact import Contact
 
 class DeletePopUp(Popup):
@@ -20,7 +21,7 @@ class ContactBtn(ToggleButton):
     self.nome_contato = contato.nome
     self.idade_contato = contato.idade
     self.tel_contato = contato.tel
-    self.text = self.nome_contato + " " + str(self.idade_contato) + " " + self.tel_contato
+    self.text = f"{self.nome_contato} {self.idade_contato} {self.tel_contato}"
     self.group = 'contatos'
 
   def _do_release(self, *args):
@@ -35,19 +36,36 @@ class MainScreen(BoxLayout):
   
   def get(self):
     self.ids.agenda.clear_widgets()
-    contactRep = ContactRepository()
-    agenda = contactRep.get()
+    connectionFactory = ConnectionFactory()
+    session = connectionFactory.create_session()
+    try:
+      contactRep = ContactRepository()
+      agenda = contactRep.get(session)
 
-    for contato in agenda:
-      self.ids.agenda.add_widget(ContactBtn(contato))
+      for contato in agenda:
+        self.ids.agenda.add_widget(ContactBtn(contato))
+    except:
+      session.rollback()
+      raise
+    finally:
+      session.close()
 
   def insert(self):
     if self.__verify_fields():
       nome = self.ids.nome.text
       idade = int(self.ids.idade.text)
       tel = self.ids.tel.text
-      contactRep = ContactRepository()
-      contactRep.insert(Contact(nome, idade, tel))
+      connectionFactory = ConnectionFactory()
+      session = connectionFactory.create_session()
+      try:
+        contactRep = ContactRepository()
+        contactRep.insert(Contact(nome, idade, tel), session)
+        session.commit()
+      except:
+        session.rollback()
+        raise
+      finally:
+        session.close()
       self.__clean_fields()
       self.get()
 
@@ -60,8 +78,17 @@ class MainScreen(BoxLayout):
       nome = self.ids.nome.text
       idade = int(self.ids.idade.text)
       tel = self.ids.tel.text
-      contactRep = ContactRepository()
-      contactRep.update(id, Contact(nome, idade, tel))
+      connectionFactory = ConnectionFactory()
+      session = connectionFactory.create_session()
+      try:
+        contactRep = ContactRepository()
+        contactRep.update(id, Contact(nome, idade, tel), session)
+        session.commit()
+      except:
+        session.rollback()
+        raise
+      finally:
+        session.close()
       self.__clean_fields()
       self.get()
 
@@ -72,19 +99,46 @@ class MainScreen(BoxLayout):
     popup.open()
 
   def delete_contact(self, id):
-    contactRep = ContactRepository()
-    contactRep.delete(id)
+    connectionFactory = ConnectionFactory()
+    session = connectionFactory.create_session()
+    try:
+      contactRep = ContactRepository()
+      contactRep.delete(id, session)
+      session.commit()
+    except:
+      session.rollback()
+      raise
+    finally:
+      session.close()
     MainScreen.selected_id = 0
     self.__clean_fields()
     self.get()
 
   def export_contacts(self):
-    contactRep = ContactRepository()
-    contactRep.export_contacts()
+    connectionFactory = ConnectionFactory()
+    session = connectionFactory.create_session()
+    try:
+      contactRep = ContactRepository()
+      contactRep.export_contacts(session)
+    except:
+      session.rollback()
+      raise
+    finally:
+      session.close()
 
   def import_contacts(self):
-    contactRep = ContactRepository()
-    contactRep.import_contacts()
+    connectionFactory = ConnectionFactory()
+    session = connectionFactory.create_session()
+    try:
+      contactRep = ContactRepository()
+      contactRep.import_contacts(session)
+      session.commit()
+    except:
+      session.rollback()
+      raise
+    finally:
+      session.close()
+    
     self.get()
 
   def __clean_fields(self):

@@ -1,90 +1,47 @@
-from factories.connection_factory import ConnectionFactory
+from queries.contact_query import ContactQuery
 from entities.contact import Contact
+from domains.db import TableContact
 
 class ContactRepository():
-  def get(self):
-    cf = ConnectionFactory()
-    db = cf.connect()
+  def get(self, session):
+    contact_query = ContactQuery()
+    agenda_tabela = contact_query.get(session)
     agenda = []
-    try:
-      cursor = db.cursor()
-      cursor.execute("SELECT * FROM contatos")
-      
-      for i in cursor.fetchall():
-        agenda.append(Contact(i[1], int(i[2]), i[3], int(i[0])))
-    finally:
-      db.close()
-      return agenda
 
-  def insert(self, contato):
-    cf = ConnectionFactory()
-    db = cf.connect()
-    try:
-      cursor = db.cursor()
-      cursor.execute("INSERT INTO contatos (nome, idade, tel) VALUES (%s, %s, %s)", (contato.nome, contato.idade, contato.tel))
-    finally:
-      db.close()
+    for c in agenda_tabela:
+      agenda.append(Contact(c.nome, c.idade, c.tel, c.id))
+    
+    return agenda
 
-  def update(self, id, contato):
-    cf = ConnectionFactory()
-    db = cf.connect()
-    try:
-      cursor = db.cursor()
-      cursor.execute("UPDATE contatos SET nome=%s, idade=%s, tel=%s WHERE id=%s", (contato.nome, contato.idade, contato.tel, id))
-    finally:
-      db.close()
+  def insert(self, contato, session):
+    contact_query = ContactQuery()
+    new_contact = TableContact(nome=contato.nome,idade=contato.idade, tel=contato.tel)
+    contact_query.insert(new_contact, session)
 
-  def delete(self, id):
-    cf = ConnectionFactory()
-    db = cf.connect()
-    try:
-      cursor = db.cursor()
-      cursor.execute("DELETE FROM contatos WHERE id=%s", (id, ))
-    finally:
-      db.close()
+  def update(self, id, contato, session):
+    contact_query = ContactQuery()
+    contact_query.update(id, contato, session)
 
-  def find_by_name(self, nome):
-    cf = ConnectionFactory()
-    db = cf.connect()
-    try:
-      cursor = db.cursor()
-      print(nome)
-      cursor.execute("SELECT tel FROM contatos WHERE nome=%s", (nome,))
-      res = cursor.fetchone()
-      if len(res) != 0:
-        return res[0]
-      return False
-    finally:
-      db.close()
+  def delete(self, id, session):
+    contact_query = ContactQuery()
+    contact_query.delete(id, session)
 
-  def find_by_id(self, id):
-    cf = ConnectionFactory()
-    db = cf.connect()
-    try:
-      cursor = db.cursor()
-      cursor.execute("SELECT * FROM contatos WHERE id=%s", (id, ))
-      res = cursor.fetchone()
-      if len(res) != 0:
-        return Contact(res[1], res[2], res[3], res[0])
-      return False
-    finally:
-      db.close()
-
-  def export_contacts(self):
+  def export_contacts(self, session):
     try:
       with open("agenda.txt","w") as file:
-        agenda = self.get()
+        agenda = self.get(session)
         for c in agenda:
           file.write(f"{c.id} - {c.nome} - {c.idade} - {c.tel} \n")
     except FileNotFoundError:
       print("Arquivo não encontrado")
 
-  def import_contacts(self):
+  def import_contacts(self, session):
     try:
       with open("agenda.txt", "r") as file:
         linhas = file.readlines()
         for linha in linhas:
           dados = linha.split(" - ")
-          self.insert(Contact(dados[1], int(dados[2]), dados[3].split(" \n")[0]))
+          contato = Contact(dados[1], int(dados[2]), dados[3].split(" \n")[0])
+          self.insert(contato, session)
     except FileNotFoundError:
       print("Arquivo não encontrado")
