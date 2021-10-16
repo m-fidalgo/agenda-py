@@ -9,8 +9,16 @@ class ContactQuery():
     session.add(contact)
   
   def update(self, id, contact, session):
-    session.query(TableContact).filter(TableContact.id == id).update({'nome': contact.nome, 'idade': contact.idade, 'tel': contact.tel})
+    contato = self.get_by_id(id, session)
+    contato.nome = contact.nome
+    contato.idade = contact.idade
+    contato.tel = contact.tel
+    #session.query(TableContact).filter(TableContact.id == id).update({'nome': contact.nome, 'idade': contact.idade, 'tel': contact.tel})
 
   def delete(self, id, session):
-    contato = session.query(TableContact).filter(TableContact.id == id).one()
+    contato = self.get_by_id(id, session)
     session.delete(contato)
+
+  def get_by_id(self, id, session):
+    contato = session.query(TableContact).filter(TableContact.id == id).one()
+    return contato
